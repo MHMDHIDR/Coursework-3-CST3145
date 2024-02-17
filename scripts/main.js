@@ -1,31 +1,10 @@
-<template>
-  <div id="app">
-    <!-- Loading -->
-    <div id="loading" v-if="!fetchedLessons.length && !apiError">
-      <div id="wrapper">
-        <div id="mouse"></div>
-        <div class="loader"></div>
-        <div class="loading-bar">
-          <div class="progress-bar"></div>
-        </div>
-        <div class="status">
-          <div class="state"></div>
-          <div class="percentage"></div>
-        </div>
-      </div>
-    </div>
-    <CartComponent />
-    <main>
-      <CheckoutComponent />
-      <LessonsComponent />
-    </main>
-  </div>
-</template>
-
-<script>
-import CartComponent from './components/Cart.vue'
-import CheckoutComponent from './components/Checkout.vue'
-import LessonsComponent from './components/Lessons.vue'
+import {
+  addToCart,
+  checkout,
+  removeFromCart,
+  resetCart,
+  saveOrder
+} from './cart/index.js'
 
 export default new Vue({
   el: '#app',
@@ -50,144 +29,18 @@ export default new Vue({
     apiError: null
   },
   methods: {
-    addToCart: function addToCart(lesson) {
-      if (lesson.spaces > 0) {
-        /*
-         * only when there are spaces available then add to cart
-         * and update the spaces in the lesson
-         * Also update the initialLessons[] for that specific lesson
-         */
-        lesson.spaces -= 1
-        const existingLesson = this.cart.find(item => item._id === lesson._id)
-
-        if (existingLesson) {
-          /*
-           * we'll check the lesson by it's id, we'll compare it to the cart using find method,
-           * if its there then we'll update the values
-           */
-          existingLesson.bookedClasses += 1
-          existingLesson.totalPrice += lesson.price
-        } else {
-          //if not then we'll creat a new object for it to the cart and push it to the cart
-          const cartLesson = Object.assign({}, lesson, {
-            bookedClasses: 1,
-            totalPrice: lesson.price
-          })
-          this.cart.push(cartLesson)
-        }
-
-        /*
-         * Update initialLessons array with the new  bookedClasses
-         * so that the user can see the updated spaces in the lessons list (Landing page)
-         */
-        const initialLessonIndex = this.initialLessons.findIndex(
-          item => item._id === lesson._id
-        )
-        if (initialLessonIndex !== -1) {
-          this.initialLessons[initialLessonIndex].spaces = lesson.spaces
-        }
-      }
+    addToCart,
+    removeFromCart,
+    resetCart: function () {
+      resetCart(this.cart, this.loadLessons)
     },
-    removeFromCart: function removeFromCart(lesson) {
-      lesson.spaces += 1
-
-      const index = this.cart.findIndex(item => item._id === lesson._id)
-      if (index !== -1) {
-        this.cart[index].bookedClasses -= 1
-        this.cart[index].totalPrice -= lesson.price
-
-        if (this.cart[index].bookedClasses === 0) {
-          this.cart.splice(index, 1)
-        }
-
-        // Update the lessons array with the modified lesson
-        const originalLessonIndex = this.fetchedLessons.findIndex(
-          item => item._id === lesson._id
-        )
-        if (originalLessonIndex !== -1) {
-          this.fetchedLessons[originalLessonIndex].spaces += 1
-        }
-      }
+    checkout: function () {
+      checkout(this.checkoutForm, this.cart, this.updateLessonsSpaces)
     },
-    /**
-     * Reset the cart to its initial state
-     * @param {Array} cart - The cart array
-     * @param {Function} loadLessons - The loadLessons function
-     */
-    resetCart: function resetCart(cart, loadLessons, fromCheckout = false) {
-      // empty the cart
-      cart.splice(0, cart.length)
+    saveOrder: function () {
+      saveOrder(this.checkoutForm, this.cart)
+    },
 
-      !fromCheckout && loadLessons()
-
-      console.log('Cart reset successfully  ✅')
-    },
-    checkout: function checkout(checkoutForm, cart) {
-      const confirmCheckoutMsg =
-        'Are you sure you want to confirm purchasing the items in the cart?'
-      const cancelCheckoutMsg = 'You can go back and add more items or reset your cart'
-
-      !confirm(confirmCheckoutMsg)
-        ? alert(cancelCheckoutMsg)
-        : saveOrder(checkoutForm, cart)
-    },
-    /**
-     * Update the lessons spaces after the order is saved
-     * if successful saved the order
-     * Them I'll use orderedLessons to update the lessons spaces
-     */
-    saveOrder: function saveOrder(form, cart) {
-      // Fetch POST to save the order
-      fetch(`${ELASTIC_BEANSTALK_API_URL}/orders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          orderedLessons: cart.map(({ _id, bookedClasses }) => ({
-            _id,
-            spaces: bookedClasses
-          }))
-        })
-      })
-        .then(res => res.json())
-        .then(_data => updateLessonsSpaces(cart))
-        // if there was an error then I'll alert the user
-        .catch(err => {
-          console.error(err)
-          return new Error('Error saving order: ' + err.message)
-        })
-        .finally(() => {
-          resetCart(cart, null, true)
-          // reset the form fields
-          form.name = ''
-          form.phone = ''
-        })
-    },
-    /**
-     * Update the lessons spaces after the order is saved
-     * if successful saved the order
-     * Them I'll use orderedLessons to update the lessons spaces
-     */
-    updateLessonsSpaces: function updateLessonsSpaces(cart) {
-      fetch(`${this.ELASTIC_BEANSTALK_API_URL}/lessons`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderedLessons: cart.map(({ _id, bookedClasses }) => ({
-            _id,
-            spaces: bookedClasses
-          }))
-        })
-      })
-        .then(res => res.json())
-        .then(_data => alert('Thank you for your purchase ✅'))
-        // if there was an error then I'll alert the user
-        .catch(err => {
-          alert(err)
-          console.error(err)
-          return new Error('Error updating lessons spaces: ' + err.message)
-        })
-    },
     loadLessons: function () {
       const loadLessonsInterval = setInterval(async () => {
         try {
@@ -360,6 +213,8 @@ export default new Vue({
   // created is called only once when the component is created [when the page is loaded]
   created() {
     this.loadLessons()
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+    }
   }
 })
-</script>

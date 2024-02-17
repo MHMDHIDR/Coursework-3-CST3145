@@ -3,14 +3,147 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name='theme-color' content='#00c9eb' />
+  <meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no' />
+  <link rel="icon" href="./assets/imgs/cart.svg">
+  <link rel="manifest" href="afterschool.webmanifest">
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+  <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+  <script src="./scripts/main.js" type="module"></script>
   <title>After School Online Lessons Booking System</title>
 </head>
 
 <body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.js"></script>
+  <div id="app">
+    <!-- Loading Before Lessons are done fetching -->
+    <div id="loading" v-if="!fetchedLessons.length && !apiError">
+      <div id="wrapper">
+        <div id="mouse"></div>
+        <div class="loader">
+        </div>
+        <div class="loading-bar">
+          <div class="progress-bar"></div>
+        </div>
+        <div class="status">
+          <div class="state"></div>
+          <div class="percentage"></div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <header>
+        <div class="flex">
+          <h1 v-text="webappName"></h1>
+          <!-- Toggle Cart (Show Cart of hide it's view) -->
+          <input class="search" type="search" placeholder="Search for Lessons to book" v-model="searchQuery"
+            v-if="!showCart" />
+        </div>
+        <div class="header__buttons">
+          <!-- Cart button -->
+          <div class="header__buttons--cart">
+            <button @click="toggleShowCart" :disabled="totalItemsInTheCart === 0">
+              <img src="./assets/imgs/cart.svg" alt="Cart Icon">
+              {{ `${ totalItemsInTheCart > 1 ? totalItemsInTheCart + ' Items' :
+              totalItemsInTheCart + ' Item'} in cart` }}
+            </button>
+            <button @click="resetCart" :disabled="totalItemsInTheCart === 0">
+              <img src="./assets/imgs/trash.svg" alt="Trash Icon">
+              Reset Cart
+            </button>
+          </div>
+
+          <!-- Sorting buttons [subject - location -  price - spaces] -->
+          <div class="header__buttons--sorting" v-if="!showCart">
+            <button @click="sortBySubject">Subject</button>
+            <button @click="sortByLocation">Location</button>
+            <button @click="sortByPrice">Price</button>
+            <button @click="sortBySpaces">Spaces</button>
+          </div>
+        </div>
+        <button class="backBtn" @click="toggleShowCart" v-if="showCart">⇦ Back to Lessons</button>
+      </header>
+      <main>
+        <!-- Chechout view -->
+        <div v-if="showCart" class="cart-container">
+          <h2>Shopping Cart</h2>
+          <div v-if="totalItemsInTheCart > 0">
+            <ul class="cart-added-items">
+              <li v-for="(item, index) in cart" :key="item._id + '-' + index">
+                <img :src="`${ELASTIC_BEANSTALK_API_URL}/images/` + item.image" :alt="item.subject" width="50"
+                  height="50" />
+                <p>
+                  [ {{ item.bookedClasses }} classes booked ] - {{ item.subject }}
+                  <span>- Total Price: <strong>£{{ Math.round(item.totalPrice) }}</strong> </span>
+                </p>
+                </span>
+                <button @click="removeFromCart(item)">Remove</button>
+              </li>
+            </ul>
+            <p>Your total price for all classes booked = £{{ Math.round(totalCartPrice) }}</p>
+            <form name="checkout">
+              <div class="input-group">
+                <label for="#name">Please Enter Your Name</label>
+                <input type="text" id="name" :disabled="cart.length === 0" v-model="checkoutForm.name" />
+              </div>
+              <div class="input-group">
+                <label for="#phone">Please Enter Your Phone Number</label>
+                <input type="number" id="phone" :disabled="cart.length === 0" v-model="checkoutForm.phone" />
+              </div>
+            </form>
+            <button @click="checkout" :disabled="cart.length === 0 || !isInputValid">
+              Checkout
+            </button>
+          </div>
+          <p class="errorMsg" v-else>
+            Your Cart is empty, click <u>Back to Lessons</u> button to view the lessons
+          </p>
+        </div>
+        <div class="main bd-grid grid-wrapper" v-else>
+          <!-- Show Error when lessons not found! -->
+          <p class="errorMsg" v-if="apiError">{{ apiError }}</p>
+          <!-- Lessons view -->
+          <article class="lesson card" v-for="lesson in filteredLessons" :key="lesson._id" v-if="fetchedLessons.length">
+            <div class="card__img">
+              <img :src="`${ELASTIC_BEANSTALK_API_URL}/images/` + lesson.image" :alt="lesson.subject" width="150"
+                height="150">
+              <small>{{ lesson.subject }}</small>
+            </div>
+            <div class="card__name">
+              <small>{{ lesson.subject }}</small>
+              <span class="card__info--location">Location: {{ lesson.location }}</span>
+            </div>
+            <div class="card__info">
+              <div>
+                <small class="card__info--spaces">
+                  {{
+                  lesson.spaces === 0 ? 'Fully Booked'
+                  : lesson.spaces === 1 ? '1 Last Seat'
+                  : `Spaces: ${lesson.spaces}`
+                  }}
+                </small>
+                <span class="card__info--location">Location: {{ lesson.location }}</span>
+              </div>
+
+              <div>
+                <span class="card__info--price">£{{ lesson.price }}</span>
+              </div>
+              <button class="card__icon" @click="addToCart(lesson)" :title="'Add ' + lesson.subject + ' to the Cart'"
+                :disabled="lesson.spaces === 0">
+                <img src="./assets/imgs/cart.svg" alt="Cart Icon" :title="'Add ' + lesson.subject + ' to the Cart'">
+              </button>
+            </div>
+          </article>
+          <!-- Search for lessons NOT found! -->
+          <div class="errorMsg" v-if="fetchedLessons.length && fetchedLessons.length === 0">
+            <p>Sorry, the lessons you are looking for cannot be found.</p>
+            <p>Please try a different search or reset your filters.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
 </body>
 
 </html>

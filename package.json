@@ -1,23 +1,13 @@
 {
-  "name": "after-school-booking-system",
-  "description": "Web Based Mobile App Dev Coursework2 After School Booking System",
-  "version": "0.0.0",
+  "name": "client",
+  "description": "Client for Web Based Mobile App Dev Coursework2",
+  "packageManager": "yarn@3.5.1",
+  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview --port 4173"
-  },
-  "dependencies": {
-    "vue": "^2.7.7"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-legacy": "^2.0.0",
-    "@vitejs/plugin-vue2": "^1.1.2",
-    "terser": "^5.14.2",
-    "vite": "^3.0.2"
+    "dev": "live-server"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MHMDHIDR/Coursework-3-CST3145.git"
+    "url": "git+https://github.com/MHMDHIDR/web-based-mobile-app-dev-coursework2-client.git"
   }
 }
