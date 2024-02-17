@@ -35,27 +35,32 @@ self.addEventListener('install', function (e) {
 self.addEventListener('fetch', function (e) {
   e.respondWith(
     caches.match(e.request).then(function (cachedFile) {
-      //if the file is in the cache, retrieve it from there
+      // If the file is in the cache, retrieve it from there
       if (cachedFile) {
         console.log(
-          '[Service Worker] Resource fetched from the cache for: ' + e.request.url
+          '[Service Worker] Resource FETCHED from the cache for: ' + e.request.url
         )
         return cachedFile
-      } 
-      // else {
-      //   //if the file is not in the cache, download the file
-      //   return fetch(e.request).then(function (response) {
-      //     return caches.open(cacheName).then(function (cache) {
-      //       //add the new file to the cache
-      //       cache.put(e.request, response.clone())
-      //       console.log(
-      //         '[Service Worker] Resource fetched and saved in the cache for: ' +
-      //           e.request.url
-      //       )
-      //       return response
-      //     })
-      //   })
-      // }
+      } else {
+        // If the file is not in the cache, download the file
+        return fetch(e.request).then(function (response) {
+          // Check if the request URL starts with 'chrome-extension'
+          if (e.request.url.startsWith('chrome-extension://')) {
+            // Do not cache requests from Chrome extensions
+            return response;
+          }
+          return caches.open(cacheName).then(function (cache) {
+            // Add the new file to the cache
+            cache.put(e.request, response.clone())
+            console.log(
+              '[Service Worker] Resource fetched and SAVED in the cache for: ' +
+                e.request.url
+            )
+            return response
+          })
+        })
+      }
     })
   )
 })
+
