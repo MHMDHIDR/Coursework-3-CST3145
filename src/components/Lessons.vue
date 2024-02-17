@@ -1,5 +1,5 @@
 <template>
-  <div class="main bd-grid grid-wrapper">
+  <div class="main bd-grid grid-wrapper" v-else>
     <!-- Show Error when lessons not found! -->
     <p class="errorMsg" v-if="apiError">{{ apiError }}</p>
     <!-- Lessons view -->
@@ -11,7 +11,7 @@
     >
       <div class="card__img">
         <img
-          :src="`${ELASTIC_BEANSTALK_API_URL}/images/${lesson.image}`"
+          :src="`${ELASTIC_BEANSTALK_API_URL}/images/` + lesson.image"
           :alt="lesson.subject"
           width="150"
           height="150"
@@ -46,7 +46,7 @@
           :disabled="lesson.spaces === 0"
         >
           <img
-            :src="require('@/assets/imgs/cart.svg')"
+            src="./assets/imgs/cart.svg"
             alt="Cart Icon"
             :title="'Add ' + lesson.subject + ' to the Cart'"
           />
@@ -60,22 +60,3 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  props: {
-    fetchedLessons: Array,
-    apiError: String,
-    ELASTIC_BEANSTALK_API_URL: String
-  },
-  methods: {
-    addToCart(lesson) {
-      // Implement add to cart logic
-    }
-  }
-}
-</script>
-
-<style scoped>
-/* Your component-specific styles here */
-</style>
