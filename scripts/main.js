@@ -213,8 +213,5 @@ export default new Vue({
   // created is called only once when the component is created [when the page is loaded]
   created() {
     this.loadLessons()
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-    }
   }
 })
