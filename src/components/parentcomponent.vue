@@ -302,7 +302,10 @@ export default {
       return this.cart.reduce((total, item) => total + item.totalPrice, 0)
     }
   },
-  // created is called only once when the component is created [when the page is loaded]
+  /**
+   * I'll call the loadLessons method when the component
+   * is created [when the page is loaded]
+   */
   created() {
     this.loadLessons()
   }
