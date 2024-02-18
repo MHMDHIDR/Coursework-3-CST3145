@@ -28,7 +28,7 @@
           <span class="card__info--price">£{{ lesson.price }}</span>
         </div>
         <button class="card__icon" @click="addToCart(lesson)" :title="'Add ' + lesson.subject + ' to the Cart'" :disabled="lesson.spaces === 0">
-          <img src="../../public/cart.png" alt="Cart Icon" :title="'Add ' + lesson.subject + ' to the Cart'">
+          <img :src="cartIcon" alt="Cart Icon" :title="'Add ' + lesson.subject + ' to the Cart'">
         </button>
       </div>
     </article>
@@ -40,10 +40,9 @@
   </div>
 </template>
 
-
-
 <script>
 import { addToCart } from '../scripts/cart/index.js'
+import cartIcon from '../../public/cart.png'
 
 export default {
   props: {
@@ -58,7 +57,8 @@ export default {
   },
   data() {
     return {
-      apiError: null
+      apiError: null,
+      cartIcon
     }
   },
   methods: {
@@ -68,5 +68,3 @@ export default {
   }
 }
 </script>
-
-

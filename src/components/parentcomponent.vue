@@ -31,7 +31,7 @@
           <!-- Cart button -->
           <div class="header__buttons--cart">
             <button @click="toggleShowCart" :disabled="totalItemsInTheCart === 0">
-              <img src="../../public/cart.png" alt="Cart Icon" />
+              <img :src="cartIcon" alt="Cart Icon" />
               {{
                 `${
                   totalItemsInTheCart > 1
@@ -41,7 +41,7 @@
               }}
             </button>
             <button @click="resetCart" :disabled="totalItemsInTheCart === 0">
-              <img src="../../public/trash.png" alt="Trash Icon" />
+              <img :src="trashIcon" alt="Trash Icon" />
               Reset Cart
             </button>
           </div>
@@ -61,7 +61,7 @@
       <main>
         <!-- Checkout component -->
         <div v-if="showCart" class="cart-container">
-          <Checkout :cart="cart" @remove-from-cart="removeFromCart" @checkout="checkout" />
+          <Checkout :cart="cart" @remove-from-cart="removeFromCart" @checkout="checkout" :ELASTIC_BEANSTALK_API_URL="ELASTIC_BEANSTALK_API_URL" />
         </div>
 
         <!-- Lessons component -->
@@ -88,6 +88,8 @@ import {
   resetCart,
   saveOrder
 } from '../scripts/cart/index.js'
+import cartIcon from '../../public/cart.png'
+import trashIcon from '../../public/trash.png'
 
 export default {
   data() {
@@ -109,7 +111,9 @@ export default {
       SEARCH_DELAY: 1000,
       lastSearchQuery: '',
       // when API is down or not respondant, this will be shown
-      apiError: null
+      apiError: null,
+      cartIcon,
+      trashIcon,
     }
   },
   components: {
