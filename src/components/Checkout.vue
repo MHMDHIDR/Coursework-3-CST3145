@@ -23,7 +23,7 @@
           <input type="number" id="phone" :disabled="cart.length === 0" v-model="checkoutForm.phone" />
         </div>
       </form>
-      <button @click="checkout" :disabled="cart.length === 0 || !isInputValid">Checkout</button>
+      <button @click="checkout(checkoutForm)" :disabled="cart.length === 0 || !isInputValid">Checkout</button>
     </div>
     <p class="errorMsg" v-else>
       Your Cart is empty, click <u>Back to Lessons</u> button to view the lessons
@@ -73,7 +73,7 @@ export default {
       this.$emit('remove-from-cart', item);
     },
     checkout() {
-      this.$emit('checkout');
+      this.$emit('checkout', this.checkoutForm);
     }
   }
 };

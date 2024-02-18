@@ -126,8 +126,8 @@ export default {
     resetCart: function () {
       resetCart(this.cart, this.loadLessons)
     },
-    checkout: function () {
-      checkout(this.checkoutForm, this.cart, this.updateLessonsSpaces)
+    checkout: function (checkoutForm) {
+      checkout(checkoutForm, this.cart, this.updateLessonsSpaces)
     },
     saveOrder: function () {
       saveOrder(this.checkoutForm, this.cart)
