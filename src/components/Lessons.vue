@@ -1,18 +1,11 @@
 <template>
-  <div class="lessons">
-    <article
-      class="lesson card"
-      v-for="lesson in filteredLessons"
-      :key="lesson._id"
-      v-if="fetchedLessons.length"
-    >
+  <div class="main bd-grid grid-wrapper">
+    <!-- Show Error when lessons not found! -->
+    <p class="errorMsg" v-if="apiError">{{ apiError }}</p>
+    <!-- Lessons view -->
+    <article class="lesson card" v-for="lesson in fetchedLessons" :key="lesson._id" v-if="fetchedLessons.length">
       <div class="card__img">
-        <img
-          :src="`${ELASTIC_BEANSTALK_API_URL}/images/` + lesson.image"
-          :alt="lesson.subject"
-          width="150"
-          height="150"
-        />
+        <img :src="`${ELASTIC_BEANSTALK_API_URL}/images/${lesson.image}`" :alt="lesson.subject" width="150" height="150">
         <small>{{ lesson.subject }}</small>
       </div>
       <div class="card__name">
@@ -23,11 +16,9 @@
         <div>
           <small class="card__info--spaces">
             {{
-              lesson.spaces === 0
-                ? 'Fully Booked'
-                : lesson.spaces === 1
-                ? '1 Last Seat'
-                : `Spaces: ${lesson.spaces}`
+            lesson.spaces === 0 ? 'Fully Booked'
+            : lesson.spaces === 1 ? '1 Last Seat'
+            : `Spaces: ${lesson.spaces}`
             }}
           </small>
           <span class="card__info--location">Location: {{ lesson.location }}</span>
@@ -36,29 +27,30 @@
         <div>
           <span class="card__info--price">£{{ lesson.price }}</span>
         </div>
-        <button
-          class="card__icon"
-          @click="addToCart(lesson)"
-          :title="'Add ' + lesson.subject + ' to the Cart'"
-          :disabled="lesson.spaces === 0"
-        >
-          <img
-            src="./assets/imgs/cart.svg"
-            alt="Cart Icon"
-            :title="'Add ' + lesson.subject + ' to the Cart'"
-          />
+        <button class="card__icon" @click="addToCart(lesson)" :title="'Add ' + lesson.subject + ' to the Cart'" :disabled="lesson.spaces === 0">
+          <img src="../../public/cart.png" alt="Cart Icon" :title="'Add ' + lesson.subject + ' to the Cart'">
         </button>
       </div>
     </article>
     <!-- Search for lessons NOT found! -->
-    <div class="errorMsg" v-if="fetchedLessons.length && fetchedLessons.length === 0">
+    <div class="errorMsg" v-else>
       <p>Sorry, the lessons you are looking for cannot be found.</p>
       <p>Please try a different search or reset your filters.</p>
     </div>
   </div>
 </template>
 
+
+
 <script>
+import {
+  addToCart,
+  checkout,
+  removeFromCart,
+  resetCart,
+  saveOrder
+} from '../scripts/cart/index.js'
+
 export default {
   props: {
     fetchedLessons: {
@@ -70,6 +62,18 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      apiError: null
+    }
+  },
+  computed: {
+    filteredLessons() {
+      // Implement your filtering logic here based on fetchedLessons
+      // For now, returning an empty array
+      return [];
+    }
+  },
   methods: {
     addToCart(lesson) {
       this.$emit('add-to-cart', lesson)
@@ -77,3 +81,5 @@ export default {
   }
 }
 </script>
+
+

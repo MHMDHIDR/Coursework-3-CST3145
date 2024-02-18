@@ -31,7 +31,7 @@
           <!-- Cart button -->
           <div class="header__buttons--cart">
             <button @click="toggleShowCart" :disabled="totalItemsInTheCart === 0">
-              <img src="./assets/imgs/cart.svg" alt="Cart Icon" />
+              <img src="../../public/cart.png" alt="Cart Icon" />
               {{
                 `${
                   totalItemsInTheCart > 1
@@ -41,7 +41,7 @@
               }}
             </button>
             <button @click="resetCart" :disabled="totalItemsInTheCart === 0">
-              <img src="./assets/imgs/trash.svg" alt="Trash Icon" />
+              <img src="../../public/trash.png" alt="Trash Icon" />
               Reset Cart
             </button>
           </div>
@@ -59,24 +59,35 @@
         </button>
       </header>
       <main>
-        <!-- Lessons component -->
-        <Lessons
-          :fetchedLessons="fetchedLessons"
-          :ELASTIC_BEANSTALK_API_URL="ELASTIC_BEANSTALK_API_URL"
-          @add-to-cart="addToCart"
-        />
-
         <!-- Checkout component -->
-        <Checkout :cart="cart" @remove-from-cart="removeFromCart" @checkout="checkout" />
+        <div v-if="showCart" class="cart-container">
+          <Checkout :cart="cart" @remove-from-cart="removeFromCart" @checkout="checkout" />
+        </div>
+
+        <!-- Lessons component -->
+        <div class="main bd-grid grid-wrapper" v-else>
+          <Lessons
+            :filteredLessons="filteredLessons"
+            :fetchedLessons="fetchedLessons"
+            :ELASTIC_BEANSTALK_API_URL="ELASTIC_BEANSTALK_API_URL"
+            @add-to-cart="addToCart"
+          />
+        </div>        
       </main>
-      ack
     </div>
   </div>
 </template>
 
 <script>
-import Lessons from './components/Lessons.vue'
-import Checkout from './components/Checkout.vue'
+import Lessons from './lessons.vue'
+import Checkout from './checkout.vue'
+import {
+  addToCart,
+  checkout,
+  removeFromCart,
+  resetCart,
+  saveOrder
+} from '../scripts/cart/index.js'
 
 export default {
   data() {
