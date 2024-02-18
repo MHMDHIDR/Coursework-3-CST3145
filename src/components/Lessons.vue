@@ -43,13 +43,7 @@
 
 
 <script>
-import {
-  addToCart,
-  checkout,
-  removeFromCart,
-  resetCart,
-  saveOrder
-} from '../scripts/cart/index.js'
+import { addToCart } from '../scripts/cart/index.js'
 
 export default {
   props: {
@@ -65,13 +59,6 @@ export default {
   data() {
     return {
       apiError: null
-    }
-  },
-  computed: {
-    filteredLessons() {
-      // Implement your filtering logic here based on fetchedLessons
-      // For now, returning an empty array
-      return [];
     }
   },
   methods: {
