@@ -60,9 +60,11 @@ export default {
     },
     isInputValid() {
       const { name, phone } = this.checkoutForm;
-      const isPhoneValid = phone.trim().length > 2; // has at least 3 numbers
+      /** has at least 3 numbers */
+      const isPhoneValid = phone.trim().length > 2;
+      /** only letters and has at least 2 letters [spaces are NOT allowed] */
       const isNameValid =
-        /^[A-Za-z]+$/.test(name.trim()) && name.trim().length > 1; // only letters and has at least 2 letters [spaces are NOT allowed]
+        /^[A-Za-z]+$/.test(name.trim()) && name.trim().length > 1;
       return isPhoneValid && isNameValid;
     }
   },
