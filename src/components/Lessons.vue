@@ -3,7 +3,7 @@
     <!-- Show Error when lessons not found! -->
     <p class="errorMsg" v-if="apiError">{{ apiError }}</p>
     <!-- Lessons view -->
-    <article class="lesson card" v-for="lesson in fetchedLessons" :key="lesson._id" v-if="fetchedLessons.length">
+    <article class="lesson card" v-for="lesson in filteredLessons" :key="lesson._id" v-if="fetchedLessons.length">
       <div class="card__img">
         <img :src="`${ELASTIC_BEANSTALK_API_URL}/images/${lesson.image}`" :alt="lesson.subject" width="150" height="150">
         <small>{{ lesson.subject }}</small>
@@ -46,6 +46,10 @@ import cartIcon from '../../public/cart.png'
 
 export default {
   props: {
+    filteredLessons: {
+      type: Array,
+      required: true
+    },
     fetchedLessons: {
       type: Array,
       required: true
