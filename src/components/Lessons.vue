@@ -3,9 +3,19 @@
     <!-- Show Error when lessons not found! -->
     <p class="errorMsg" v-if="apiError">{{ apiError }}</p>
     <!-- Lessons view -->
-    <article class="lesson card" v-for="lesson in filteredLessons" :key="lesson._id" v-if="fetchedLessons.length">
+    <article
+      class="lesson card"
+      v-for="lesson in filteredLessons"
+      :key="lesson._id"
+      v-if="fetchedLessons.length"
+    >
       <div class="card__img">
-        <img :src="`${ELASTIC_BEANSTALK_API_URL}/images/${lesson.image}`" :alt="lesson.subject" width="150" height="150">
+        <img
+          :src="`${ELASTIC_BEANSTALK_API_URL}/images/${lesson.image}`"
+          :alt="lesson.subject"
+          width="150"
+          height="150"
+        />
         <small>{{ lesson.subject }}</small>
       </div>
       <div class="card__name">
@@ -16,9 +26,11 @@
         <div>
           <small class="card__info--spaces">
             {{
-            lesson.spaces === 0 ? 'Fully Booked'
-            : lesson.spaces === 1 ? '1 Last Seat'
-            : `Spaces: ${lesson.spaces}`
+              lesson.spaces === 0
+                ? 'Fully Booked'
+                : lesson.spaces === 1
+                ? '1 Last Seat'
+                : `Spaces: ${lesson.spaces}`
             }}
           </small>
           <span class="card__info--location">Location: {{ lesson.location }}</span>
@@ -27,8 +39,17 @@
         <div>
           <span class="card__info--price">£{{ lesson.price }}</span>
         </div>
-        <button class="card__icon" @click="addToCart(lesson)" :title="'Add ' + lesson.subject + ' to the Cart'" :disabled="lesson.spaces === 0">
-          <img :src="cartIcon" alt="Cart Icon" :title="'Add ' + lesson.subject + ' to the Cart'">
+        <button
+          class="card__icon"
+          @click="addToCart(lesson)"
+          :title="'Add ' + lesson.subject + ' to the Cart'"
+          :disabled="lesson.spaces === 0"
+        >
+          <img
+            :src="cartIcon"
+            alt="Cart Icon"
+            :title="'Add ' + lesson.subject + ' to the Cart'"
+          />
         </button>
       </div>
     </article>
@@ -42,7 +63,7 @@
 
 <script>
 import { addToCart } from '../scripts/cart/index.js'
-import cartIcon from '../../public/cart.png'
+import cartIcon from '/cart.png'
 
 export default {
   props: {

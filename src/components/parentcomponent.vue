@@ -61,7 +61,12 @@
       <main>
         <!-- Checkout component -->
         <div v-if="showCart" class="cart-container">
-          <Checkout :cart="cart" @remove-from-cart="removeFromCart" @checkout="checkout" :ELASTIC_BEANSTALK_API_URL="ELASTIC_BEANSTALK_API_URL" />
+          <Checkout
+            :cart="cart"
+            @remove-from-cart="removeFromCart"
+            @checkout="checkout"
+            :ELASTIC_BEANSTALK_API_URL="ELASTIC_BEANSTALK_API_URL"
+          />
         </div>
 
         <!-- Lessons component -->
@@ -72,7 +77,7 @@
             :ELASTIC_BEANSTALK_API_URL="ELASTIC_BEANSTALK_API_URL"
             @add-to-cart="addToCart"
           />
-        </div>        
+        </div>
       </main>
     </div>
   </div>
@@ -88,8 +93,8 @@ import {
   resetCart,
   saveOrder
 } from '../scripts/cart/index.js'
-import cartIcon from '../../public/cart.png'
-import trashIcon from '../../public/trash.png'
+import cartIcon from '/cart.png'
+import trashIcon from '/trash.png'
 
 export default {
   data() {
@@ -113,7 +118,7 @@ export default {
       // when API is down or not respondant, this will be shown
       apiError: null,
       cartIcon,
-      trashIcon,
+      trashIcon
     }
   },
   components: {
