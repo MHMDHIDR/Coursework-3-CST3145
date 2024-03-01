@@ -55,6 +55,10 @@ a {
   margin: 0 auto;
 }
 
+header .header__buttons {
+  margin-inline: 1rem;
+}
+
 .flex {
   display: flex;
   flex-direction: column;
@@ -75,15 +79,34 @@ a {
   justify-content: space-between;
 }
 
+.header__buttons--cart {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.header__buttons--sorting {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* on min 680px screen and more */
+@media screen and (max-width: 680px) {
+  .header__buttons--cart,
+  .header__buttons--sorting {
+    flex-direction: column;
+    gap: 0;
+
+    button {
+      margin: 0.25rem 0;
+    }
+  }
+}
+
 .header__buttons--cart img {
   max-width: calc(var(--icon-size) / 2);
   max-height: calc(var(--icon-size) / 2);
   vertical-align: bottom;
-}
-
-.header__buttons--sorting {
-  display: inline-block;
-  width: fit-content;
 }
 
 .header__buttons--sorting button {
