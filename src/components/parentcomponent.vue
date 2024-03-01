@@ -27,6 +27,20 @@
             v-if="!showCart"
           />
         </div>
+        <!-- Test Console and Its Functionalities -->
+        <div class="header__buttons">
+          <a v-bind:href="`${ELASTIC_BEANSTALK_API_URL}/lessons`" target="_blank">
+            <button>🟢 HTTPS Test</button>
+          </a>
+          <button @click="deleteAllCaches">
+            <img :src="trashIcon" alt="Trash Icon" width="15" />
+            Delete All Caches
+          </button>
+          <button @click="unregisterAllServiceWorkers">
+            🔄 Unregister All ServiceWorkers
+          </button>
+          <button @click="reloadPage" class="test-elem">♻️ Reload Page</button>
+        </div>
         <div class="header__buttons">
           <!-- Cart button -->
           <div class="header__buttons--cart">
@@ -126,6 +140,23 @@ export default {
     Checkout
   },
   methods: {
+    deleteAllCaches() {
+      caches.keys().then(function (names) {
+        for (let name of names) caches.delete(name)
+      })
+      console.log('✅ Deleted Cache Successfully!')
+    },
+    unregisterAllServiceWorkers() {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (let registration of registrations) {
+          registration.unregister()
+        }
+      })
+      console.log('✅ Unregistered ServiceWorkers')
+    },
+    reloadPage() {
+      window.location.reload()
+    },
     addToCart,
     removeFromCart,
     resetCart: function () {
