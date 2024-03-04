@@ -73,25 +73,16 @@
         </button>
       </header>
       <main>
-        <!-- Checkout component -->
-        <div v-if="showCart" class="cart-container">
-          <Checkout
-            :cart="cart"
-            @remove-from-cart="removeFromCart"
-            @checkout="checkout"
-            :ELASTIC_BEANSTALK_API_URL="ELASTIC_BEANSTALK_API_URL"
-          />
-        </div>
-
-        <!-- Lessons component -->
-        <div class="main bd-grid grid-wrapper" v-else>
-          <Lessons
-            :filteredLessons="filteredLessons"
-            :fetchedLessons="fetchedLessons"
-            :ELASTIC_BEANSTALK_API_URL="ELASTIC_BEANSTALK_API_URL"
-            @add-to-cart="addToCart"
-          />
-        </div>
+        <component
+          :is="currentUI"
+          :cart="cart"
+          @remove-from-cart="removeFromCart"
+          @checkout="checkout"
+          :ELASTIC_BEANSTALK_API_URL="ELASTIC_BEANSTALK_API_URL"
+          :filteredLessons="filteredLessons"
+          :fetchedLessons="fetchedLessons"
+          @add-to-cart="addToCart"
+        />
       </main>
     </div>
   </div>
@@ -336,6 +327,9 @@ export default {
     //I'll calculate the total price of my cart
     totalCartPrice: function () {
       return this.cart.reduce((total, item) => total + item.totalPrice, 0)
+    },
+    currentUI: function () {
+      return this.showCart ? 'checkout' : 'lessons'
     }
   },
   /**
